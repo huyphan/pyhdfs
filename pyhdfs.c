@@ -25,12 +25,11 @@ pyhdfsFS_dealloc(pyhdfsFS* self)
     self->ob_type->tp_free((PyObject*)self);
 }
 
-
 /* constructor */
 static PyObject *
 pyhdfsFS_open(char* filepath,char mode)
 { 
-    pyhdfsFS *object;
+    pyhdfsFS *object = NULL;
     object = PyObject_NEW(pyhdfsFS, &pyhdfsFSType);
 
     if (object != NULL)
