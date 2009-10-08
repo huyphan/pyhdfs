@@ -1,5 +1,5 @@
 #include <Python.h>
-#include <Numeric/arrayobject.h>
+#include <arrayobject.h>
 
 #include <sys/types.h>
 #include <stdio.h>
@@ -50,6 +50,7 @@ pyhdfsFS_open(char* filepath,char mode)
         ret = sscanf(portStr, "%d", &hdfsPort);
 
         object->fs = hdfsConnect(host, hdfsPort);
+
         if (!object->fs)
         {
             PyErr_SetString(exception, "Cannot connect to host");
@@ -159,7 +160,10 @@ pyhdfsFS_init(pyhdfsFS *self, PyObject *args, PyObject *kwds)
 
 static PyObject *pyhdfsFS_close(pyhdfsFS *self) 
 {   
-    hdfsCloseFile(self->fs, self->file);
+    if (self->file != NULL)
+    {
+        hdfsCloseFile(self->fs, self->file);
+    }
     hdfsDisconnect(self->fs);
     return Py_BuildValue("i",1);
 }
@@ -197,7 +201,7 @@ static PyObject *pyhdfsFS_write(pyhdfsFS *self, PyObject *args)
 
     aptr = array->data;
 
-    tSize num_written_bytes = hdfsWrite(self->fs, self->file, (void*)aptr, n+1);
+    tSize num_written_bytes = hdfsWrite(self->fs, self->file, (void*)aptr, n);
 
     tOffset currentPos = -1;
     if ((currentPos = hdfsTell(self->fs, self->file)) == -1) {
@@ -224,7 +228,7 @@ static PyObject *pyhdfsFS_read(pyhdfsFS *self, PyObject *args) {
     
     int dim[1];
     dim[0] = n;
-    result = (PyArrayObject *) PyArray_FromDims(1, dim, PyArray_CHAR);
+    result = (PyArrayObject *) PyArray_SimpleNew(1, dim, PyArray_CHAR);
     buffer = result->data;
     if (hdfsRead(self->fs, self->file, (void*)buffer, n) > 0)
         return PyArray_Return(result);
