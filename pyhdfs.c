@@ -25,6 +25,7 @@ pyhdfsFS_dealloc(pyhdfsFS* self)
     self->ob_type->tp_free((PyObject*)self);
 }
 
+
 /* constructor */
 static PyObject *
 pyhdfsFS_open(char* filepath,char mode)
@@ -69,7 +70,12 @@ pyhdfsFS_open(char* filepath,char mode)
             }
             else 
             {
-                PyErr_SetString(exception, "Cannot open file for read");
+				char* error_message = (char *)calloc(strlen("Cannot open file for read : ") + strlen(path) + 1, 
+                        sizeof(char));
+				strcat(error_message, "Cannot open file for read : ");
+				strcat(error_message, path);
+
+                PyErr_SetString(exception, error_message);
                 return NULL;
             }
         }
@@ -77,7 +83,12 @@ pyhdfsFS_open(char* filepath,char mode)
         {
             if (hdfsExists(object->fs, path) == 0)
             {            
-                PyErr_SetString(exception, "Cannot open file for write");
+				char* error_message = (char *)calloc(strlen("Cannot open file for write : ") + strlen(path) + 1, 
+                        sizeof(char));
+				strcat(error_message, "Cannot open file for write : ");
+				strcat(error_message, path);
+
+                PyErr_SetString(exception, error_message);
                 return NULL;
             }             
             else 
@@ -91,7 +102,12 @@ pyhdfsFS_open(char* filepath,char mode)
 
         if(!object->file) 
         {
-            PyErr_SetString(exception, "Cannot open file");
+				char* error_message = (char *)calloc(strlen("Cannot open file : ") + strlen(path) + 1, 
+                        sizeof(char));
+				strcat(error_message, "Cannot open file : ");
+				strcat(error_message, path);
+
+                PyErr_SetString(exception, error_message);
             return NULL;
         }        
     }
@@ -163,7 +179,7 @@ static PyObject *pyhdfsFS_close(pyhdfsFS *self)
     {
         hdfsCloseFile(self->fs, self->file);
     }
-    hdfsDisconnect(self->fs);
+//    hdfsDisconnect(self->fs);
     return Py_BuildValue("i",1);
 }
 
@@ -219,20 +235,26 @@ static PyObject *pyhdfsFS_read(pyhdfsFS *self, PyObject *args) {
     int n;
 
     PyArrayObject *result;
-    char *buffer;
 
     if (!PyArg_ParseTuple(args, "i", &n)) {
         return NULL;
     }
     
+    char *buffer = (char*) malloc(n);
+	int len = hdfsRead(self->fs, self->file, (void*)buffer, n);
+	if (len <= 0)
+	{
+		return Py_None;
+	}
+
     int dim[1];
-    dim[0] = n;
+    dim[0] = len;
     result = (PyArrayObject *) PyArray_SimpleNew(1, dim, PyArray_CHAR);
-    buffer = result->data;
-    if (hdfsRead(self->fs, self->file, (void*)buffer, n) > 0)
-        return PyArray_Return(result);
-    else 
-        return Py_None;
+	memcpy(result->data,buffer,len);
+
+	free(buffer);
+
+    return PyArray_Return(result);
 }
 
 static PyMemberDef pyhdfsFS_members[] = {
