@@ -70,12 +70,13 @@ pyhdfsFS_open(char* filepath,char mode)
             }
             else 
             {
-				char* error_message = (char *)calloc(strlen("Cannot open file for read : ") + strlen(path) + 1, 
+                char* error_message = (char *)calloc(strlen("Cannot open file for read : ") + strlen(path) + 1, 
                         sizeof(char));
-				strcat(error_message, "Cannot open file for read : ");
-				strcat(error_message, path);
+                strcat(error_message, "Cannot open file for read : ");
+                strcat(error_message, path);
 
                 PyErr_SetString(exception, error_message);
+                free(error_message);
                 return NULL;
             }
         }
@@ -83,12 +84,13 @@ pyhdfsFS_open(char* filepath,char mode)
         {
             if (hdfsExists(object->fs, path) == 0)
             {            
-				char* error_message = (char *)calloc(strlen("Cannot open file for write : ") + strlen(path) + 1, 
+                char* error_message = (char *)calloc(strlen("Cannot open file for write : ") + strlen(path) + 1, 
                         sizeof(char));
-				strcat(error_message, "Cannot open file for write : ");
-				strcat(error_message, path);
+                strcat(error_message, "Cannot open file for write : ");
+                strcat(error_message, path);
 
                 PyErr_SetString(exception, error_message);
+                free(error_message);
                 return NULL;
             }             
             else 
@@ -102,14 +104,18 @@ pyhdfsFS_open(char* filepath,char mode)
 
         if(!object->file) 
         {
-				char* error_message = (char *)calloc(strlen("Cannot open file : ") + strlen(path) + 1, 
+            char* error_message = (char *)calloc(strlen("Cannot open file : ") + strlen(path) + 1, 
                         sizeof(char));
-				strcat(error_message, "Cannot open file : ");
-				strcat(error_message, path);
+            strcat(error_message, "Cannot open file : ");
+            strcat(error_message, path);
 
-                PyErr_SetString(exception, error_message);
+            PyErr_SetString(exception, error_message);
+            free(error_message);
+
             return NULL;
         }        
+
+		free(path);
     }
     return (PyObject *)object;
 }
@@ -226,6 +232,8 @@ static PyObject *pyhdfsFS_write(pyhdfsFS *self, PyObject *args)
     if (hdfsFlush(self->fs, self->file)) {
         return Py_BuildValue("i",0);
     }
+
+	Py_DECREF(array);
 
     return Py_BuildValue("i",num_written_bytes);
 }
