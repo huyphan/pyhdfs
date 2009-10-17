@@ -21,7 +21,7 @@ PyObject *exception = NULL;
 
 static void
 pyhdfsFS_dealloc(pyhdfsFS* self)
-{
+{	
     self->ob_type->tp_free((PyObject*)self);
 }
 
@@ -30,13 +30,12 @@ pyhdfsFS_dealloc(pyhdfsFS* self)
 static PyObject *
 pyhdfsFS_open(char* filepath,char mode)
 { 
-    pyhdfsFS *object = NULL;
-    object = PyObject_NEW(pyhdfsFS, &pyhdfsFSType);
+    pyhdfsFS *object = PyObject_NEW(pyhdfsFS, &pyhdfsFSType);
 
     if (object != NULL)
     {
         // Parse HDFS information
-        char* hostport = (char *)malloc(strlen(filepath)+1);
+        char* hostport = (char *)malloc(strlen(filepath)+1);		
         char* buf = NULL;
         char* path;
         char* portStr;  
@@ -54,7 +53,7 @@ pyhdfsFS_open(char* filepath,char mode)
         if (!object->fs)
         {
             PyErr_SetString(exception, "Cannot connect to host");
-            return exception;
+            return NULL;
         }
 
         path = (char*) malloc(strlen(buf)+2);
@@ -114,7 +113,7 @@ pyhdfsFS_open(char* filepath,char mode)
 
             return NULL;
         }        
-
+        free(hostport);
 		free(path);
     }
     return (PyObject *)object;
@@ -158,6 +157,9 @@ pyhdfsFS_delete(char* filepath)
         PyErr_SetString(exception, "Cannot delete file");
         return NULL;
     }
+
+    free(hostport);
+    free(path);
 
     return Py_BuildValue("i",1);
 }
@@ -251,7 +253,8 @@ static PyObject *pyhdfsFS_read(pyhdfsFS *self, PyObject *args) {
     char *buffer = (char*) malloc(n);
 	int len = hdfsRead(self->fs, self->file, (void*)buffer, n);
 	if (len <= 0)
-	{
+	{		
+		Py_INCREF(Py_None);
 		return Py_None;
 	}
 
