@@ -5,7 +5,7 @@
 
 INSTALLATION 
 
-Edit the file setup.cfg to your system configuration :
+Edit the file setup.cfg to match with your system configuration :
     include-dirs : Directories that contain header files : hdfs.h, jni.g, jni_md.h
     library-dirs : Directories that contain library files : libhdfs.so, libjvm.so
 
@@ -16,7 +16,7 @@ CONFIGURATION
 Add the library dirs to your LD_LIBRARY_PATH. For ex : 
     $ export LD_LIBRARY_PATH=/usr/lib/jvm/java-6-sun-1.6.0.13/jre/lib/i386/server:/home/pdah/dev/hadoop-0.18.3/libhdfs
 
-Set the CLASSPATH to HADOOP CLASSPATH. For ex : 
+Set your CLASSPATH to HADOOP CLASSPATH. For ex : 
     $ export CLASSPATH=/home/pdah/dev/hadoop-0.18.3/bin/../conf:/usr/lib/jvm/java-6-sun/jre//lib/tools.jar:/home/pdah/dev/hadoop-0.18.3/bin/..:/home/pdah/dev/hadoop-0.18.3/bin/../hadoop-0.18.3-core.jar:/home/pdah/dev/hadoop-0.18.3/bin/../lib/commons-cli-2.0-SNAPSHOT.jar:/home/pdah/dev/hadoop-0.18.3/bin/../lib/commons-codec-1.3.jar:/home/pdah/dev/hadoop-0.18.3/bin/../lib/commons-httpclient-3.0.1.jar:/home/pdah/dev/hadoop-0.18.3/bin/../lib/commons-logging-1.0.4.jar:/home/pdah/dev/hadoop-0.18.3/bin/../lib/commons-logging-api-1.0.4.jar:/home/pdah/dev/hadoop-0.18.3/bin/../lib/commons-net-1.4.1.jar:/home/pdah/dev/hadoop-0.18.3/bin/../lib/jets3t-0.6.0.jar:/home/pdah/dev/hadoop-0.18.3/bin/../lib/jetty-5.1.4.jar:/home/pdah/dev/hadoop-0.18.3/bin/../lib/junit-3.8.1.jar:/home/pdah/dev/hadoop-0.18.3/bin/../lib/kfs-0.1.3.jar:/home/pdah/dev/hadoop-0.18.3/bin/../lib/log4j-1.2.15.jar:/home/pdah/dev/hadoop-0.18.3/bin/../lib/oro-2.0.8.jar:/home/pdah/dev/hadoop-0.18.3/bin/../lib/servlet-api.jar:/home/pdah/dev/hadoop-0.18.3/bin/../lib/slf4j-api-1.4.3.jar:/home/pdah/dev/hadoop-0.18.3/bin/../lib/slf4j-log4j12-1.4.3.jar:/home/pdah/dev/hadoop-0.18.3/bin/../lib/xmlenc-0.52.jar:/home/pdah/dev/hadoop-0.18.3/bin/../lib/jetty-ext/commons-el.jar:/home/pdah/dev/hadoop-0.18.3/bin/../lib/jetty-ext/jasper-compiler.jar:/home/pdah/dev/hadoop-0.18.3/bin/../lib/jetty-ext/jasper-runtime.jar:/home/pdah/dev/hadoop-0.18.3/bin/../lib/jetty-ext/jsp-api.jar
 
 You can get these directories by adding the line "echo $CLASSPATH" (without quote) at the end of <HADOOP_PATH>/bin/hadoop script.
